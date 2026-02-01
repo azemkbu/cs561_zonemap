@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <chrono>
 #include "zonemaps.h"
+#include "zonemaps.cpp"
 
 // Specify your path of workload file here
 std::string kInputDataPath = "./workload.dat";

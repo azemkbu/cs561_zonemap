@@ -1,10 +1,10 @@
 all: main workloadgenerator
 
 main: main.cpp zonemaps.cpp
-	g++ -g -std=c++11 -o $@ $^
+	g++ -O3 -std=c++11 -o main main.cpp zonemaps.cpp
 
 workloadgenerator: workload_generator.cpp
-	g++ -g -std=c++11 -o $@ $^
+	g++ -O3 -std=c++11 -o workloadgenerator workload_generator.cpp
 
 clear:
 	rm -f main workloadgenerator workload.dat point_queries.txt range_queries.txt
