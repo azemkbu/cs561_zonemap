@@ -1,5 +1,4 @@
 #include <fstream>
-#include <ctime>
 #include <algorithm>
 #include <vector>
 #include <iostream>
@@ -97,7 +96,7 @@ void generate_input_data(std::string & output_path, Parameters & params,
 	input_data.clear();
 	input_data.resize(params.N);
 	// construct a trivial random generator engine from a time-based seed:
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();	
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 	std::default_random_engine gen (seed);
 	std::uniform_int_distribution<int>  dist(0, params.UB);
 	std::ofstream output_file(output_path, std::ios::binary);
@@ -118,10 +117,10 @@ void generate_input_data(std::string & output_path, Parameters & params,
 	output_file.close();
 }
 
-void generate_point_queries(std::string & output_path, Parameters & params, 
+void generate_point_queries(std::string & output_path, Parameters & params,
 		std::vector<int> & input_data) {
 
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();	
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 	std::default_random_engine gen (seed);
 	std::uniform_int_distribution<int>  dist1(0, (size_t) (2.0*params.UB));
 	std::uniform_int_distribution<int>  dist2(0, input_data.size() - 1);
@@ -143,8 +142,41 @@ void generate_point_queries(std::string & output_path, Parameters & params,
 
 }
 void generate_range_queries(std::string & output_path, Parameters & params,
-		std::vector<int> & input_data) {
-	// Your code starts here ...
+							std::vector<int> & input_data) {
+	std::ofstream output_file(output_path);
+	if (!output_file.is_open()) return;
+
+	const size_t N = input_data.size();
+	if (N == 0 || params.R <= 0) return;
+
+	size_t k = static_cast<size_t>(params.s * static_cast<double>(N));
+
+	if (params.s > 0.0 && k == 0) k = 1;
+
+	if (k > N) k = N;
+
+	std::vector<int> sorted_data = input_data;
+	std::sort(sorted_data.begin(), sorted_data.end());
+
+	std::mt19937 gen(std::random_device{}());
+
+	if (k == N) {
+		for (int i = 0; i < params.R; i++) {
+			output_file << sorted_data.front() << " " << sorted_data.back() << "\n";
+		}
+		return;
+	}
+
+	std::uniform_int_distribution<size_t> dist_start(0, N - k);
+
+	for (int i = 0; i < params.R; i++) {
+		size_t start = dist_start(gen);
+		int low  = sorted_data[start];
+		int high = sorted_data[start + k - 1];
+		output_file << low << " " << high << "\n";
+	}
+	output_file.close();
 }
+
 
 
